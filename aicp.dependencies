@@ -10,7 +10,7 @@
     "branch": "mm6.0"
   },
   {
-    "repository": "audahadi/android_kernel_xiaomi_dior",
+    "repository": "kernel-hut/android_kernel_xiaomi_dior",
     "target_path": "kernel/xiaomi/dior",
     "branch" : "mashmellow"
   }
