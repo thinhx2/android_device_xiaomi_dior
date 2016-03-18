@@ -36,6 +36,8 @@ typedef struct governor_settings {
     char *target_loads;
     char *target_loads_off;
     int scaling_max_freq;
+    int scaling_min_freq;
+    int scaling_min_freq_off;
 } power_profile;
 
 static power_profile profiles[PROFILE_MAX] = {
@@ -49,23 +51,27 @@ static power_profile profiles[PROFILE_MAX] = {
         .io_is_busy = 0,
         .min_sample_time = 60000,
         .sampling_down_factor = 100000,
-        .target_loads = "95 1190400:99",
-        .target_loads_off = "95 1190400:99",
+        .target_loads = "95",
+        .target_loads_off = "95",
         .scaling_max_freq = 1190000,
+        .scaling_min_freq = 300000,
+        .scaling_min_freq_off = 300000,
     },
     [PROFILE_BALANCED] = {
         .boost = 0,
         .boostpulse_duration = 60000,
         .go_hispeed_load = 50,
         .go_hispeed_load_off = 90,
-        .hispeed_freq = 998400,
-        .hispeed_freq_off = 787200,
+        .hispeed_freq = 787200,
+        .hispeed_freq_off = 600000,
         .io_is_busy = 1,
         .min_sample_time = 60000,
         .sampling_down_factor = 100000,
         .target_loads = "80 998400:90 1190400:99",
         .target_loads_off = "95 1190400:99",
         .scaling_max_freq = 1401000,
+        .scaling_min_freq = 300000,
+        .scaling_min_freq_off = 300000,
     },
     [PROFILE_HIGH_PERFORMANCE] = {
         .boost = 1,
@@ -81,7 +87,9 @@ static power_profile profiles[PROFILE_MAX] = {
         .sampling_down_factor = 100000,
         .target_loads = "80",
         .target_loads_off = "80",
-        .scaling_max_freq = 1190400,
+        .scaling_max_freq = 1593600,
+        .scaling_min_freq = 998400,
+        .scaling_min_freq_off = 300000,
     },
     [PROFILE_BIAS_POWER_SAVE] = {
         .boost = 0,
@@ -96,5 +104,7 @@ static power_profile profiles[PROFILE_MAX] = {
         .target_loads = "95 1190400:99",
         .target_loads_off = "95 1190400:99",
         .scaling_max_freq = 1305000,
+        .scaling_min_freq = 300000,
+        .scaling_min_freq_off = 300000,
     },
 };
