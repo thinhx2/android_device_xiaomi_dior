@@ -18,11 +18,11 @@
 BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
 
 # Architecture
-TARGET_ARCH := arm
+TARGET_ARCH 		:= arm
 TARGET_ARCH_VARIANT := armv7-a-neon
-TARGET_CPU_ABI := armeabi-v7a
-TARGET_CPU_ABI2 := armeabi
-TARGET_CPU_VARIANT := cortex-a7
+TARGET_CPU_ABI 		:= armeabi-v7a
+TARGET_CPU_ABI2 	:= armeabi
+TARGET_CPU_VARIANT 	:= cortex-a7
 
 # Platform
 TARGET_BOARD_PLATFORM := msm8226
@@ -52,6 +52,16 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.dior
 
+# Enable dex-preoptimization to speed up first boot sequence
+ifeq ($(HOST_OS),linux)
+  ifeq ($(TARGET_BUILD_VARIANT),user)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+    endif
+  endif
+endif
+DONT_DEXPREOPT_PREBUILTS := true
+
 # Encryption
 TARGET_HW_DISK_ENCRYPTION := true
 
@@ -77,6 +87,7 @@ TARGET_PROVIDES_GPS_LOC_API := true
 # Graphics
 BOARD_EGL_CFG := device/xiaomi/dior/configs/egl.cfg
 TARGET_USES_C2D_COMPOSITION := true
+TARGET_USE_COMPAT_GRALLOC_PERFORM := true
 TARGET_USES_ION := true
 USE_OPENGL_RENDERER := true
 HAVE_ADRENO_SOURCE:= false
@@ -97,13 +108,16 @@ MAX_EGL_CACHE_SIZE := 2048*1024
 # Hardware tunables
 BOARD_HARDWARE_CLASS := device/xiaomi/dior/cmhw
 
+# No old RPC for prop
+TARGET_NO_RPC := true
+
 # Init
 TARGET_UNIFIED_DEVICE := true
 TARGET_INIT_VENDOR_LIB := libinit_msm
 TARGET_LIBINIT_DEFINES_FILE := device/xiaomi/dior/init/init_dior.cpp
 
 # Kernel
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-eabi-
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.9/bin/arm-eabi-
 TARGET_KERNEL_SOURCE := kernel/xiaomi/dior
 TARGET_KERNEL_CONFIG := dior_custom_defconfig
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=dior user_debug=31 msm_rtb.filter=0x37 androidboot.selinux=permissive
