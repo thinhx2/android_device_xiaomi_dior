@@ -103,6 +103,9 @@ on boot
     chown system system /sys/class/leds/blue/duty_pcts
     chown system system /sys/class/leds/blue/ramp_step_ms
 
+    #Enable Dynamic Fsync
+    write /sys/kernel/dyn_fsync/Dyn_fsync_active 1
+
     # Dynamic FPS
     chown system graphics /sys/class/graphics/fb0/dynamic_fps
     chmod 0664 /sys/class/graphics/fb0/dynamic_fps
