@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 The CyanogenMod Project
+# Copyright (C) 2016 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,7 +76,6 @@ TARGET_PROVIDES_GPS_LOC_API := true
 
 # Graphics
 TARGET_USES_C2D_COMPOSITION := true
-TARGET_USE_COMPAT_GRALLOC_PERFORM := true
 TARGET_USES_ION := true
 USE_OPENGL_RENDERER := true
 HAVE_ADRENO_SOURCE:= false
@@ -169,6 +168,7 @@ WIFI_DRIVER_FW_PATH_AP := "ap"
 WIFI_DRIVER_FW_PATH_STA := "sta"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 TARGET_USES_QCOM_WCNSS_QMI := true
+TARGET_PROVIDES_WCNSS_QMI := true
 
 # inherit from the proprietary version
 -include vendor/xiaomi/dior/BoardConfigVendor.mk
