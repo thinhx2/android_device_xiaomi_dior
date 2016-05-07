@@ -17,32 +17,31 @@
 package org.cyanogenmod.hardware;
 
 import org.cyanogenmod.hardware.util.FileUtils;
+
 import java.io.File;
+/*
+ * Disable capacitive keys
+ *
+ * This is intended for use on devices in which the capacitive keys
+ * can be fully disabled for replacement with a soft navbar. You
+ * really should not be using this on a device with mechanical or
+ * otherwise visible-when-inactive keys
+ *
+ */
 
-public class VibratorHW {
+public class KeyDisabler {
 
-    private static String AMP_PATH = "/sys/class/timed_output/vibrator/amp";
+    //Path
+    private static String CONTROL_PATH = "/sys/bus/i2c/drivers/atmel_mxt_ts/5-004b/keys_off";
 
-    public static boolean isSupported() {
-        return new File(AMP_PATH).exists();
+    public static boolean isSupported() { return true; }
+
+    public static boolean isActive() {
+        return (FileUtils.readOneLine(CONTROL_PATH).equals("0"));
     }
 
-    public static int getMaxIntensity()  {
-        return 100;
+    public static boolean setActive(boolean state) {
+        return FileUtils.writeLine(CONTROL_PATH, (state ? "1" : "0"));
     }
-    public static int getMinIntensity()  {
-        return 50;
-    }
-    public static int getWarningThreshold()  {
-        return 85;
-    }
-    public static int getCurIntensity()  {
-        return Integer.parseInt(FileUtils.readOneLine(AMP_PATH));
-    }
-    public static int getDefaultIntensity()  {
-        return 70;
-    }
-    public static boolean setIntensity(int intensity)  {
-        return FileUtils.writeLine(AMP_PATH, String.valueOf(intensity));
-    }
+
 }
