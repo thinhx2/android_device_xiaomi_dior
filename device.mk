@@ -22,8 +22,16 @@ PRODUCT_AAPT_PREF_CONFIG := xhdpi
 TARGET_SCREEN_HEIGHT := 1280
 TARGET_SCREEN_WIDTH := 720
 
+$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+$(call inherit-product, device/qcom/common/Android.mk)
 $(call inherit-product-if-exists, vendor/xiaomi/dior/dior-vendor.mk)
 $(call inherit-product, frameworks/native/build/phone-xhdpi-1024-dalvik-heap.mk)
+
+# ART
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.dex2oat-filter=speed \
+    dalvik.vm.dex2oat-swap=false \
+    dalvik.vm.image-dex2oat-filter=speed
 
 # ANT+
 PRODUCT_PACKAGES += \
@@ -49,7 +57,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio_effects.conf:system/vendor/etc/audio_effects.conf \
     $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf \
-    $(LOCAL_PATH)/configs/mixer_paths.xml:system/etc/mixer_paths.xml
+    $(LOCAL_PATH)/configs/mixer_paths.xml:system/etc/mixer_paths.xml \
+    $(LOCAL_PATH)/configs/diracmobile.config:system/vendor/etc/diracmobile.config
 
 # Bluetooth
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -57,7 +66,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     qcom.bt.dev_power_class=1
 
 PRODUCT_PACKAGES += \
-    init.qcom.bt.sh
+    init.qcom.bt.sh \
+    init.qcom.fm.sh
 
 # CABL
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -68,17 +78,25 @@ PRODUCT_PROPERTY_OVERRIDES += \
     camera2.portability.force_api=1
 
 PRODUCT_PACKAGES += \
+    Screencast \
+    Snap \
     libxml2 \
-    Snap
+    camera.msm8226 \
+    libboringssl-compat
 
 # Charger
 PRODUCT_PACKAGES += \
     charger_res_images \
-    libhealthd.armani
+    libhealthd.dior
 
 # Connectivity
 PRODUCT_PACKAGES += \
     libcnefeatureconfig
+
+# Data
+PRODUCT_PACKAGES += \
+    librmnetctl \
+    rmnetcli
 
 # Display
 PRODUCT_PACKAGES += \
@@ -106,17 +124,41 @@ PRODUCT_PACKAGES += \
 
 # FM
 PRODUCT_PACKAGES += \
-    FM2 \
-    FMRecord \
-    libqcomfm_jni \
-    qcom.fmradio
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.fm.transmitter=false
+    FMRadio \
+    libfmjni
 
 # GPS
 PRODUCT_PACKAGES += \
     gps.msm8226
+
+PRODUCT_PACKAGES += \
+    gps.conf \
+    flp.conf \
+    izat.conf \
+    quipc.conf \
+    sap.conf
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.gps.agps_provider=1
+
+# Optional CM packages
+PRODUCT_PACKAGES += \
+    LiveWallpapers \
+    LiveWallpapersPicker \
+    MagicSmokeWallpapers
+
+# Extra tools in CM
+PRODUCT_PACKAGES += \
+    7z \
+    bash \
+    bzip2 \
+    curl \
+    powertop \
+    unrar \
+    unzip \
+    vim \
+    wget \
+    zip
 
 # IPC router
 PRODUCT_COPY_FILES += \
@@ -148,10 +190,19 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml
 
+# Media & Audio
 PRODUCT_PACKAGES += \
+    libc2dcolorconvert \
+    libdivxdrmdecrypt \
+    libextmedia_jni \
+    libOmxAacEnc \
+    libOmxAmrEnc \
     libOmxCore \
+    libOmxEvrcEnc \
+    libOmxQcelp13Enc \
     libOmxVdec \
     libOmxVenc \
+    libOmxVidcCommon \
     libstagefrighthw
 
 # Permissions
@@ -161,11 +212,15 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
     frameworks/native/data/etc/android.hardware.camera.front.xml:system/etc/permissions/android.hardware.camera.front.xml \
-    frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
+    frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
+    frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
+    frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.compass.xml \
     frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:system/etc/permissions/android.hardware.sensor.gyroscope.xml \
     frameworks/native/data/etc/android.hardware.sensor.light.xml:system/etc/permissions/android.hardware.sensor.light.xml \
     frameworks/native/data/etc/android.hardware.sensor.proximity.xml:system/etc/permissions/android.hardware.sensor.proximity.xml \
+    frameworks/native/data/etc/android.hardware.sensor.stepcounter.xml:system/etc/permissions/android.hardware.sensor.stepcounter.xml \
+    frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:system/etc/permissions/android.hardware.sensor.stepdetector.xml \
     frameworks/native/data/etc/android.hardware.telephony.cdma.xml:system/etc/permissions/android.hardware.telephony.cdma.xml \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
@@ -173,7 +228,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
-    frameworks/native/data/etc/android.software.midi.xml:system/etc/permissions/android.software.midi.xml \
+    frameworks/native/data/etc/android.software.print.xml:system/etc/permissions/android.software.print.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
 
@@ -181,8 +236,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     power.msm8226
 
+# Qualcomm
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.extension_library=/vendor/lib/libqti-perfd-client.so
+    persist.timed.enable=true \
+    ro.vendor.extension_library=/vendor/lib/libqc-opt.so
 
 # Ramdisk
 PRODUCT_PACKAGES += \
@@ -203,19 +260,20 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.timed.enable=true
 
+PRODUCT_PACKAGES += \
+    com.android.future.usb.accessory
+
 # Wifi
 PRODUCT_PACKAGES += \
     hostapd_default.conf \
     p2p_supplicant_overlay.conf \
     wpa_supplicant_overlay.conf \
-    WCNSS_cfg.dat \
-    WCNSS_qcom_cfg.ini \
     WCNSS_qcom_wlan_nv.bin \
     WCNSS_qcom_wlan_nv_h3gbl.bin \
     WCNSS_qcom_wlan_nv_h3td.bin \
     WCNSS_qcom_wlan_nv_h3w.bin
 
- PRODUCT_COPY_FILES += \
+PRODUCT_COPY_FILES += \
     kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
     kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
 
@@ -227,16 +285,21 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     libcurl \
+    libcnefeatureconfig \
     libqsap_sdk \
     libQWiFiSoftApCfg \
+    wcnss_service \
     libwcnss_qmi \
-    wcnss_service
+    libxml2
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    wifi.interface=wlan0 \
-    ro.disableWifiApFirmwareReload=true
+    wifi.interface=wlan0 
 
 # WFD
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.debug.wfd.enable=1 \
     persist.sys.wfd.virtual=0
+
+# LTE, GSM/WCDMA
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.get_imsi_from_sim=true

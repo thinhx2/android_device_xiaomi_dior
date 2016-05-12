@@ -69,8 +69,8 @@ on boot
     mkdir /dev/socket/qmux_gps 0770 gps gps
     chmod 2770 /dev/socket/qmux_gps
 
-    # Create NETMGR daemon socket area
-    mkdir /dev/socket/netmgr 0750 radio radio
+    chown system system /sys/module/radio_iris_transport/parameters/fmsmd_set
+    chmod 0660 /sys/module/radio_iris_transport/parameters/fmsmd_set
 
     # For setting tcp delayed ack
     chown system system /sys/kernel/ipv4/tcp_delack_seg
@@ -119,9 +119,9 @@ on boot
     chown system system /sys/class/leds/blue/duty_pcts
     chown system system /sys/class/leds/blue/ramp_step_ms
 
-    chown system system /sys/class/leds/led:flash_torch/brightness
+    chown system camera /sys/class/leds/flashlight/brightness
     chown system system /sys/class/leds/button-backlight/brightness
-    chmod 0666 /sys/class/leds/led:flash_torch/brightness
+    chmod 0666 /sys/class/leds/flashlight/brightness
     chmod 0666 /sys/class/leds/button-backlight/brightness
 
     # Key disabler
@@ -171,8 +171,6 @@ on boot
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 
 on post-fs-data
-    # Create directory for TZ Apps
-    mkdir /data/misc/qsee 0770 system system
 
     # Create directory used by audio subsystem
     mkdir /data/misc/audio 0770 audio audio
@@ -191,6 +189,9 @@ on post-fs-data
     mkdir /data/misc/location 0770 gps gps
     mkdir /data/misc/location/mq 0770 gps gps
     mkdir /data/misc/location/xtwifi 0770 gps gps
+    mkdir /data/misc/location/gpsone_d 0770 system gps
+    mkdir /data/misc/location/quipc 0770 gps system
+    mkdir /data/misc/location/gsiff 0770 gps gps
 
     # Create directory for hostapd
     mkdir /data/hostapd 0770 system wifi
@@ -214,10 +215,14 @@ on post-fs-data
     mkdir /persist/misc/sensors
     chmod 775 /persist/misc/sensors
 
+    # Create FM directories for patchdownloader
+    mkdir /data/misc/fm 0770 system system
+    chmod 0770 /data/misc/fm
+
     setprop vold.post_fs_data_done 1
 
     # Vibrator amplitude
-    chown system system /sys/class/timed_output/vibrator/amp
+    chown root system /sys/class/timed_output/vibrator/amp
     chmod 0664 /sys/class/timed_output/vibrator/amp
 
 service irsc_util /system/bin/irsc_util "/etc/sec_config"
@@ -373,12 +378,6 @@ service ril-daemon2 /system/bin/rild -c 2
 on property:persist.radio.multisim.config=none
     start ril-daemon2
 
-on property:ro.boot.modem=HM1AW
-    setprop ro.telephony.default_network 0
-
-on property:ro.boot.modem=HM1AC
-    setprop ro.telephony.default_network 7
-
 service qcamerasvr /system/bin/mm-qcamera-daemon
     class late_start
     user camera
@@ -437,6 +436,13 @@ service xtwifi_inet /system/bin/xtwifi-inet-agent
     user gps
     group inet gps
     disabled
+
+service fm_dl /system/bin/sh /system/etc/init.qcom.fm.sh
+    class late_start
+    user system
+    group system
+    disabled
+    oneshot
 
 service charger /sbin/healthd -c
     class charger

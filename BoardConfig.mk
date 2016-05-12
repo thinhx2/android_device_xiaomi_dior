@@ -43,6 +43,7 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 
 # Charger
+BOARD_CHARGER_SHOW_PERCENTAGE := true
 BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.dior
@@ -61,7 +62,14 @@ TARGET_USERIMAGES_USE_EXT4		:= true
 BOARD_FLASH_BLOCK_SIZE			:= 131072
 
 # FM
-BOARD_HAVE_QCOM_FM := true
+TARGET_FM_LEGACY_PATCHLOADER := true
+
+# Fonts
+EXTENDED_FONT_FOOTPRINT := true
+
+# GPS
+TARGET_GPS_HAL_PATH := device/xiaomi/dior/gps
+TARGET_PROVIDES_GPS_LOC_API := true
 
 # Graphics
 TARGET_USES_C2D_COMPOSITION := true
@@ -85,9 +93,6 @@ MAX_EGL_CACHE_SIZE := 2048*1024
 # Hardware tunables
 BOARD_HARDWARE_CLASS := $(LOCAL_PATH)/cmhw/
 
-# Headers
-TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
-
 # Init
 TARGET_UNIFIED_DEVICE := true
 TARGET_INIT_VENDOR_LIB := libinit_msm
@@ -95,8 +100,8 @@ TARGET_LIBINIT_DEFINES_FILE := $(LOCAL_PATH)/init/init_dior.cpp
 
 # Kernel
 TARGET_KERNEL_SOURCE := kernel/xiaomi/dior
-TARGET_KERNEL_CONFIG := cyanogenmod_dior_defconfig
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-linux-androideabi-
+TARGET_KERNEL_CONFIG := dior_custom_defconfig
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-eabi-
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=dior user_debug=31 msm_rtb.filter=0x37 androidboot.selinux=permissive
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
@@ -142,6 +147,20 @@ BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
 
 # Time services
 BOARD_USES_QC_TIME_SERVICES := true
+
+# Keymaster
+TARGET_KEYMASTER_WAIT_FOR_QSEE := true
+
+# Radio
+TARGET_RIL_VARIANT := caf
+
+# Flags
+COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD -DUSE_RIL_VERSION_10
+COMMON_GLOBAL_CPPFLAGS += -DNO_SECURE_DISCARD -DUSE_RIL_VERSION_10
+
+# Vold
+BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
+TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/msm_hsusb/gadget/lun0/file
 
 # Wifi
 BOARD_HAS_QCOM_WLAN := true
