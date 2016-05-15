@@ -83,6 +83,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     libcnefeatureconfig
 
+# Data
+PRODUCT_PACKAGES += \
+    librmnetctl \
+    rmnetcli
+
 # Display
 PRODUCT_PACKAGES += \
     copybit.msm8226 \
@@ -91,6 +96,11 @@ PRODUCT_PACKAGES += \
     memtrack.msm8226 \
     liboverlay \
     libemoji
+
+# Graphics
+PRODUCT_PACKAGES += \
+    libGLES_android \
+    libstlport
 
 # DRM
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -177,20 +187,18 @@ PRODUCT_COPY_FILES += \
 
 # Media & Audio
 PRODUCT_PACKAGES += \
-    libc2dcolorconvert \
-    libdivxdrmdecrypt \
-    libdashplayer \
-    libOmxAacEnc \
-    libOmxAmrEnc \
-    libOmxCore \
-    libOmxEvrcEnc \
-    libOmxQcelp13Enc \
-    libOmxVdec \
-    libOmxVenc \
-    libstagefrighthw \
-    qcmediaplayer
-
-PRODUCT_BOOT_JARS += qcmediaplayer
+      libc2dcolorconvert \
+      libdivxdrmdecrypt \
+      libextmedia_jni \
+      libOmxAacEnc \
+      libOmxAmrEnc \
+      libOmxCore \
+      libOmxEvrcEnc \
+      libOmxQcelp13Enc \
+      libOmxVdec \
+      libOmxVenc \
+      libOmxVidcCommon \
+      libstagefrighthw
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -248,6 +256,8 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
+    WCNSS_cfg.dat \
+    WCNSS_qcom_cfg.ini \
     hostapd_default.conf \
     p2p_supplicant_overlay.conf \
     wpa_supplicant_overlay.conf \
@@ -255,10 +265,6 @@ PRODUCT_PACKAGES += \
     WCNSS_qcom_wlan_nv_h3gbl.bin \
     WCNSS_qcom_wlan_nv_h3td.bin \
     WCNSS_qcom_wlan_nv_h3w.bin
-
-PRODUCT_COPY_FILES += \
-    kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
-    kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
 
 PRODUCT_PACKAGES += \
     dhcpcd.conf \
@@ -268,11 +274,16 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     libcurl \
+    libcnefeatureconfig \
     libqsap_sdk \
     libQWiFiSoftApCfg \
-    wcnss_service
+    wcnss_service \
+    libxml2
 
 #    libwcnss_qmi
+
+# dexpreopt optimization
+PRODUCT_DEX_PREOPT_BOOT_FLAGS := --compiler-filter=space
 
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
