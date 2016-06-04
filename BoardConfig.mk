@@ -22,7 +22,11 @@ TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
+TARGET_CPU_SMP := true
 TARGET_CPU_VARIANT := cortex-a7
+TARGET_GLOBAL_CFLAGS += -mfpu=neon-vfpv4 -mfloat-abi=hard
+TARGET_GLOBAL_CPPFLAGS += -mfpu=neon-vfpv4 -mfloat-abi=hard
+ART_USE_OPTIMIZING_COMPILER := true
 
 # Platform
 TARGET_BOARD_PLATFORM := msm8226
@@ -31,15 +35,19 @@ USE_CLANG_PLATFORM_BUILD := true
 
 # Audio
 BOARD_USES_ALSA_AUDIO := true
+BOARD_USES_FLUENCE_INCALL := true
+AUDIO_FEATURE_ENABLED_EXTERNAL_SPEAKER := true
 AUDIO_FEATURE_ENABLED_FM := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
 AUDIO_FEATURE_ENABLED_NEW_SAMPLE_RATE := true
+AUDIO_FEATURE_ENABLED_USBAUDIO := true
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/xiaomi/dior/bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
 BLUETOOTH_HCI_USE_MCT := true
+QCOM_BT_USE_SMD_TTY := true
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := MSM8226
@@ -49,8 +57,6 @@ TARGET_NO_RADIOIMAGE := true
 # Charger
 BOARD_CHARGER_SHOW_PERCENTAGE := true
 BOARD_CHARGER_ENABLE_SUSPEND := true
-BOARD_CHARGER_DISABLE_INIT_BLANK := true
-BOARD_HAL_STATIC_LIBRARIES := libhealthd.dior
 
 # Encryption
 TARGET_HW_DISK_ENCRYPTION := true
@@ -100,9 +106,9 @@ BOARD_HARDWARE_CLASS := device/xiaomi/dior/cmhw
 TARGET_NO_RPC := true
 
 # Init
+TARGET_INIT_VENDOR_LIB := libinit_dior
+TARGET_RECOVERY_DEVICE_MODULES := libinit_dior
 TARGET_UNIFIED_DEVICE := true
-TARGET_INIT_VENDOR_LIB := libinit_msm
-TARGET_LIBINIT_DEFINES_FILE := device/xiaomi/dior/init/init_dior.cpp
 
 # Kernel
 TARGET_TOOLS_PREFIX := $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-UB-4.9/bin/arm-linux-androideabi-
@@ -134,6 +140,16 @@ TARGET_RECOVERY_FSTAB := device/xiaomi/dior/rootdir/etc/fstab.dior
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
+
+# Basic dexpreopt
+ifeq ($(HOST_OS),linux)
+  ifneq ($(TARGET_BUILD_VARIANT),userdebug)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+      WITH_DEXPREOPT_BOOT_IMG_ONLY := true
+    endif
+  endif
+endif
 
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
@@ -167,8 +183,8 @@ BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_qcwcn
 WIFI_DRIVER_FW_PATH_AP := "ap"
 WIFI_DRIVER_FW_PATH_STA := "sta"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
-TARGET_USES_QCOM_WCNSS_QMI := true
-TARGET_PROVIDES_WCNSS_QMI := true
+#TARGET_USES_QCOM_WCNSS_QMI := true
+#TARGET_PROVIDES_WCNSS_QMI := true
 
 # inherit from the proprietary version
 -include vendor/xiaomi/dior/BoardConfigVendor.mk

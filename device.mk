@@ -81,9 +81,8 @@ PRODUCT_PACKAGES += \
     libboringssl-compat
 
 # Charger
-PRODUCT_PACKAGES += \
-    charger_res_images \
-    libhealthd.dior
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/sbin/chargeonlymode:root/sbin/chargeonlymode
 
 # Connectivity
 PRODUCT_PACKAGES += \
@@ -93,6 +92,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     librmnetctl \
     rmnetcli
+
+# dexpreopt optimization
+PRODUCT_DEX_PREOPT_BOOT_FLAGS := --compiler-filter=space
 
 # Display
 PRODUCT_PACKAGES += \
@@ -195,6 +197,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     libc2dcolorconvert \
     libdivxdrmdecrypt \
+    libextmedia_jni \
     libOmxAacEnc \
     libOmxAmrEnc \
     libOmxCore \
@@ -202,6 +205,7 @@ PRODUCT_PACKAGES += \
     libOmxQcelp13Enc \
     libOmxVdec \
     libOmxVenc \
+    libOmxVidcCommon \
     libstagefrighthw
 
 # Permissions
@@ -227,6 +231,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
+    frameworks/native/data/etc/android.software.midi.xml:system/etc/permissions/android.software.midi.xml \
     frameworks/native/data/etc/android.software.print.xml:system/etc/permissions/android.software.print.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
@@ -264,6 +269,8 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
+    WCNSS_cfg.dat \
+    WCNSS_qcom_cfg.ini \
     hostapd_default.conf \
     p2p_supplicant_overlay.conf \
     wpa_supplicant_overlay.conf \
@@ -271,10 +278,6 @@ PRODUCT_PACKAGES += \
     WCNSS_qcom_wlan_nv_h3gbl.bin \
     WCNSS_qcom_wlan_nv_h3td.bin \
     WCNSS_qcom_wlan_nv_h3w.bin
-
-PRODUCT_COPY_FILES += \
-    kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
-    kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
 
 PRODUCT_PACKAGES += \
     dhcpcd.conf \
@@ -284,10 +287,12 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     libcurl \
+    libcnefeatureconfig \
     libqsap_sdk \
     libQWiFiSoftApCfg \
     wcnss_service \
-    libwcnss_qmi
+    libxml2
+#   libwcnss_qmi
 
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
@@ -298,3 +303,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     sys.io.scheduler=bfq
 
+# LTE, GSM/WCDMA
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.get_imsi_from_sim=true
