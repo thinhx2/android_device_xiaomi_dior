@@ -109,19 +109,10 @@ on boot
     chown system graphics /sys/class/graphics/fb0/dynamic_fps
     chmod 0664 /sys/class/graphics/fb0/dynamic_fps
 
-    # msm_thermal (for power HAL usage)
-    chown system system /sys/kernel/msm_thermal/user_maxfreq
-    chmod 0664 /sys/kernel/msm_thermal/user_maxfreq
-
-    # Set light thermal restrictions while running bootanimation
-    # [throttle_freq, throttle_temp, unthrottle_temp]
-    write /sys/kernel/msm_thermal/low_thresh "1593600 45 43"
-    write /sys/kernel/msm_thermal/mid_thresh "1344000 50 47"
-    write /sys/kernel/msm_thermal/high_thresh "1094400 55 53"
-    write /sys/kernel/msm_thermal/enabled 1
-
-    chown system system /sys/class/leds/flashlight/brightness
+    chown system camera /sys/class/leds/flashlight/brightness
     chown system system /sys/class/leds/button-backlight/brightness
+    chmod 0666 /sys/class/leds/flashlight/brightness
+    chmod 0666 /sys/class/leds/button-backlight/brightness
 
     # Key disabler
     chown root system /sys/bus/i2c/drivers/atmel_mxt_ts/5-004b/keys_off
@@ -154,19 +145,6 @@ on boot
     # For setting tcp delayed ack
     chown system system /sys/kernel/ipv4/tcp_delack_seg
     chown system system /sys/kernel/ipv4/tcp_use_userconfig
-
-    # Define TCP delayed ack settings for WiFi & LTE
-    setprop net.tcp.delack.default     1
-    setprop net.tcp.delack.wifi        20
-    setprop net.tcp.delack.lte         8
-    setprop net.tcp.usercfg.default    0
-    setprop net.tcp.usercfg.wifi       1
-    setprop net.tcp.usercfg.lte        1
-
-    # Assign TCP buffer thresholds to be ceiling value of technology maximums
-    # Increased technology maximums should be reflected here.
-    write /proc/sys/net/core/rmem_max  2097152
-    write /proc/sys/net/core/wmem_max  2097152
 
     # To allow interfaces to get v6 address when tethering is enabled
     write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
@@ -246,6 +224,11 @@ service rmt_storage /system/bin/rmt_storage
     class core
     user root
     group system
+
+service rfs_access /system/bin/rfs_access
+    class core
+    user system
+    group system net_raw
 
 service config_bluetooth /system/bin/sh /system/etc/init.qcom.bt.sh "onboot"
     class core
@@ -390,10 +373,10 @@ service mpdecision /system/bin/mpdecision --avg_comp
     group root system
     disabled
 
-#service thermal-engine /system/bin/thermal-engine
-#    class main
-#    user root
-#    group root
+service thermal-engine /system/bin/thermal-engine
+    class main
+    user root
+    group root
 
 service qseecomd /system/bin/qseecomd
     class core
