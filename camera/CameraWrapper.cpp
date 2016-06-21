@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2015, The CyanogenMod Project
+ * Copyright (C) 2015, The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 *
 */
 
-//#define LOG_NDEBUG 0
+#define LOG_NDEBUG 0
 
 #define LOG_TAG "CameraWrapper"
 #include <cutils/log.h>
@@ -54,7 +54,7 @@ camera_module_t HAL_MODULE_INFO_SYM = {
          .hal_api_version = HARDWARE_HAL_API_VERSION,
          .id = CAMERA_HARDWARE_MODULE_ID,
          .name = "Dior Camera Wrapper",
-         .author = "The CyanogenMod Project",
+         .author = "The Android Open Source Project",
          .methods = &camera_module_methods,
          .dso = NULL, /* remove compilation warnings */
          .reserved = {0}, /* remove compilation warnings */
@@ -64,8 +64,6 @@ camera_module_t HAL_MODULE_INFO_SYM = {
     .set_callbacks = NULL, /* remove compilation warnings */
     .get_vendor_tag_ops = NULL, /* remove compilation warnings */
     .open_legacy = NULL, /* remove compilation warnings */
-    .set_torch_mode = NULL, /* remove compilation warnings */
-    .init = NULL, /* remove compilation warnings */
     .reserved = {0}, /* remove compilation warnings */
 };
 
@@ -97,18 +95,27 @@ static int check_vendor_module()
     return rv;
 }
 
-static char *camera_fixup_getparams(int id, const char *settings)
+static char *camera_fixup_getparams(int id __attribute__((unused)),
+        const char *settings)
 {
     android::CameraParameters params;
     params.unflatten(android::String8(settings));
 
 #if !LOG_NDEBUG
-    ALOGV("%s: original parameters:", __FUNCTION__);
+    ALOGV("%s: Original parameters:", __FUNCTION__);
     params.dump();
 #endif
 
+
+    /* Remove HDR mode in front camera */
+    if (id == 1) {
+        params.set(android::CameraParameters::KEY_SUPPORTED_SCENE_MODES,
+            "auto,asd,landscape,snow,beach,sunset,night,portrait,backlight,sports,steadyphoto,flowers,candlelight,fireworks,party,night-portrait,theatre,action,AR");
+    }
+
+
 #if !LOG_NDEBUG
-    ALOGV("%s: fixed parameters:", __FUNCTION__);
+    ALOGV("%s: Fixed parameters:", __FUNCTION__);
     params.dump();
 #endif
 
@@ -120,9 +127,6 @@ static char *camera_fixup_getparams(int id, const char *settings)
 
 static char *camera_fixup_setparams(int id, const char *settings)
 {
-    bool videoMode = false;
-    bool hdrMode = false;
-
     android::CameraParameters params;
     params.unflatten(android::String8(settings));
 
@@ -130,6 +134,9 @@ static char *camera_fixup_setparams(int id, const char *settings)
     ALOGV("%s: original parameters:", __FUNCTION__);
     params.dump();
 #endif
+
+
+    params.set(android::CameraParameters::KEY_VIDEO_STABILIZATION, "false");
 
     if (params.get(android::CameraParameters::KEY_RECORDING_HINT)) {
         videoMode = !strcmp(params.get(android::CameraParameters::KEY_RECORDING_HINT), "true");
@@ -141,18 +148,27 @@ static char *camera_fixup_setparams(int id, const char *settings)
 
     /* Disable ZSL and HDR snapshots in video mode */
     if (videoMode) {
-        params.set("zsl", "off");
+        params.set(android::CameraParameters::KEY_QC_ZSL, "off");
         if (hdrMode) {
             params.set(android::CameraParameters::KEY_SCENE_MODE, "auto");
         }
     } else {
-        params.set("zsl", "on");
+        params.set(android::CameraParameters::KEY_QC_TOUCH_AF_AEC, "touch-on");
+        params.set(android::CameraParameters::KEY_QC_ZSL, "on");
     }
 
-    /* Disable flash in HDR mode */
+    /* Enable Morpho EasyHDR and disable flash in HDR mode */
     if (hdrMode && !videoMode) {
+        params.set(android::CameraParameters::KEY_QC_MORPHO_HDR, "true");
+        params.set(android::CameraParameters::KEY_QC_AE_BRACKET_HDR, "AE-Bracket");
+        params.set(android::CameraParameters::KEY_QC_CAPTURE_BURST_EXPOSURE, "-6,8,0");
         params.set(android::CameraParameters::KEY_FLASH_MODE, android::CameraParameters::FLASH_MODE_OFF);
+    } else {
+        params.set(android::CameraParameters::KEY_QC_MORPHO_HDR, "false");
+        params.set(android::CameraParameters::KEY_QC_AE_BRACKET_HDR, "Off");
+        params.set(android::CameraParameters::KEY_QC_CAPTURE_BURST_EXPOSURE, "0,0,0");
     }
+
 
 #if !LOG_NDEBUG
     ALOGV("%s: fixed parameters:", __FUNCTION__);
@@ -334,6 +350,7 @@ static int camera_auto_focus(struct camera_device *device)
 
     if (!device)
         return -EINVAL;
+
 
     return VENDOR_CALL(device, auto_focus);
 }
@@ -556,7 +573,7 @@ static int camera_device_open(const hw_module_t *module, const char *name,
         memset(camera_ops, 0, sizeof(*camera_ops));
 
         camera_device->base.common.tag = HARDWARE_DEVICE_TAG;
-        camera_device->base.common.version = HARDWARE_DEVICE_API_VERSION(1, 0);
+        camera_device->base.common.version = CAMERA_DEVICE_API_VERSION_1_0;
         camera_device->base.common.module = (hw_module_t *)(module);
         camera_device->base.common.close = camera_device_close;
         camera_device->base.ops = camera_ops;
