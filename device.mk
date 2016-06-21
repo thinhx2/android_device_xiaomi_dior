@@ -227,9 +227,6 @@ PRODUCT_PACKAGES += \
     libwcnss_qmi \
     wcnss_service
 
-# dexpreopt optimization
-PRODUCT_DEX_PREOPT_BOOT_FLAGS := --compiler-filter=space
-
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
     persist.debug.wfd.enable=1 \
