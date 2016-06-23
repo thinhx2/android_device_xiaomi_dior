@@ -44,8 +44,6 @@ on init
     # Symbols required for blobs
     export LD_PRELOAD "/system/lib/libboringssl-compat.so"
 
-    write /proc/sys/vm/page-cluster 0
-
 on fs
     mount_all fstab.dior
     restorecon_recursive /persist
@@ -504,7 +502,6 @@ on charger
     write /sys/devices/system/cpu/cpu1/online 0
     write /sys/devices/system/cpu/cpu2/online 0
     write /sys/devices/system/cpu/cpu3/online 0
-    start mpdecision
     start charger_monitor
     class_start charger
 
@@ -530,5 +527,5 @@ on property:sys.boot_completed=1
     write /sys/block/mmcblk0/bdi/read_ahead_kb 1024
     write /sys/block/mmcblk1/bdi/read_ahead_kb 1024
 
-rm /data/system/default_values
-start mpdecision
+    rm /data/system/default_values
+    start mpdecision
