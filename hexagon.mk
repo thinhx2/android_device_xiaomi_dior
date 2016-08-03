@@ -1,3 +1,4 @@
+
 # Copyright (C) 2016 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +17,14 @@
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Inherit from dior device
-$(call inherit-product, device/xiaomi/dior/device.mk)
+$(call inherit-product, device/xiaomi/dior/full_dior.mk)
 $(call inherit-product-if-exists, vendor/xiaomi/dior/dior-vendor.mk)
 
-# Inherit some common CM stuff (full)
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
+# Inherit some common hexagon stuff (full)
+$(call inherit-product, vendor/hexagon/configs/common.mk)
 
 # Product configuration
-PRODUCT_NAME := cm_dior
+PRODUCT_NAME := hexagon_dior
 PRODUCT_DEVICE := dior
 PRODUCT_BRAND := Xiaomi
 PRODUCT_MANUFACTURER := Xiaomi
